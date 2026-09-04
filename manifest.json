@@ -1,7 +1,7 @@
 {
   "id": "sales-log-app",
-  "name": "Sales Log",
-  "short_name": "Sales Log",
+  "name": "99clothes-shop",
+  "short_name": "99clothes-shop",
   "description": "Sales, restocking, repairs & expense tracker synced to Google Sheets.",
   "start_url": "./",
   "scope": "./",
