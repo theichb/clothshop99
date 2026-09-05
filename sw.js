@@ -4,13 +4,14 @@
 // manifest) so the app opens instantly and still opens with no signal.
 // Bump CACHE_NAME whenever index.html changes, so returning phones pick up
 // the new version instead of a stale cached copy.
-const CACHE_NAME = "sales-log-shell-v7";
+const CACHE_NAME = "sales-log-shell-v8";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
+  "./watermark-9t9.png",
 ];
 
 self.addEventListener("install", (event) => {
