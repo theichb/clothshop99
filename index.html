@@ -63,7 +63,17 @@
     --muted: #7C6E58;
     --oxblood: #96371F;
     --verdigris: #3F6B30;
-    background: #F8F1E1;
+    background-color: #F8F1E1;
+  }
+  /* Faint 9T9 mark watermarked behind the Dashboard's own content area —
+     lightened (partial opacity baked into the PNG) so it never fights with
+     text, and scoped to the view itself so it never bleeds into the tab bar
+     above it. */
+  #view-dashboard {
+    background-image: url('./watermark-9t9.png');
+    background-repeat: no-repeat;
+    background-position: center 24px;
+    background-size: min(60vw, 360px) auto;
   }
   body.theme-costs {
     --ink: #FFFFFF;
