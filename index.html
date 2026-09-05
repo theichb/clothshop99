@@ -38,7 +38,7 @@
     padding: 0 0 60px;
   }
 
-  /* Per-tab themes: Log Sales = warm light, Dashboard = deep green, Costs = clean white.
+  /* Per-tab themes: Log Sales = warm light, Dashboard = creamy, Costs = clean white.
      Every rule below reads its colors off these variables, so toggling one class on
      <body> per active tab reskins the whole page for free. */
   body.theme-light {
@@ -53,17 +53,17 @@
     --verdigris: #3F6B30;
     background: #F5EFDF;
   }
-  body.theme-dashgreen {
-    --ink: #3A3A3A;
-    --hide: #454545;
-    --edge: #5C5C5C;
-    --brass: #C69749;
-    --brassDim: #7A5E2E;
-    --bone: #F0F0F0;
-    --muted: #ABABA5;
-    --oxblood: #C2573B;
-    --verdigris: #8FBF7A;
-    background: var(--ink);
+  body.theme-dashcream {
+    --ink: #E9DFC9;
+    --hide: #F5EEDD;
+    --edge: #D6C7A6;
+    --brass: #8C6A2E;
+    --brassDim: #B99A5D;
+    --bone: #2A2018;
+    --muted: #7C6E58;
+    --oxblood: #96371F;
+    --verdigris: #3F6B30;
+    background: #F8F1E1;
   }
   body.theme-costs {
     --ink: #FFFFFF;
@@ -161,16 +161,6 @@
     border-radius: 3px; font-size: 15px; cursor: pointer; line-height: 1; touch-action: manipulation;
   }
   .action-btn:disabled { color: var(--muted); border-color: var(--edge); opacity: .4; cursor: default; }
-
-  /* EN/TH switch on the Dashboard. */
-  .lang-toggle { display: flex; border: 1px solid var(--edge); border-radius: 3px; overflow: hidden; }
-  .lang-btn {
-    background: none; border: none; color: var(--muted); font-size: 11px; font-weight: 600;
-    letter-spacing: .04em; padding: 7px 11px; cursor: pointer; font-family: 'Karla', sans-serif;
-    touch-action: manipulation;
-  }
-  .lang-btn + .lang-btn { border-left: 1px solid var(--edge); }
-  .lang-btn.on { color: var(--brass); background: var(--hide); }
 
   /* Prev/next day arrows flanking the date field — a quick way to step
      through previous entries one day at a time instead of opening the
@@ -284,7 +274,7 @@
        of which tab (and theme) was active, so re-pin every one of them
        here — same specificity as the theme rules above, but later in the
        stylesheet, so it wins only inside @media print. */
-    body.theme-light, body.theme-dashgreen, body.theme-costs, body {
+    body.theme-light, body.theme-dashcream, body.theme-costs, body {
       --ink: #ffffff;
       --hide: #ffffff;
       --edge: #cccccc;
@@ -402,10 +392,6 @@
         <p class="intro" id="dash-intro">Every sale logged, and what it leaves you after stock and bills.</p>
       </div>
       <div class="no-print" style="display:flex; flex-direction:column; align-items:flex-end; gap:8px; flex-shrink:0;">
-        <div class="lang-toggle" id="dash-lang-toggle">
-          <button type="button" class="lang-btn" data-lang="en">EN</button>
-          <button type="button" class="lang-btn" data-lang="th">TH</button>
-        </div>
         <button type="button" id="dash-print-btn" class="action-btn" title="Print" aria-label="Print dashboard" style="font-size:18px;">&#9113;</button>
       </div>
     </div>
@@ -550,7 +536,7 @@
   // it means those settings carry over automatically; changing it would
   // silently disconnect this file from a URL you'd already set up.
   const STORE_KEY = "sales-log-store";
-  const DEFAULT_STORE = { productCosts: {}, syncUrl: "", quickPicks: [], salesmen: [], lastSalesman: "", pinAttempts: 0, pinLockedOut: false, pinUnlockedAt: 0, dashLang: "en" };
+  const DEFAULT_STORE = { productCosts: {}, syncUrl: "", quickPicks: [], salesmen: [], lastSalesman: "", pinAttempts: 0, pinLockedOut: false, pinUnlockedAt: 0 };
   let store = Object.assign({}, DEFAULT_STORE);
   function sortQuickPicks() { store.quickPicks.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" })); }
   sortQuickPicks();
@@ -1175,64 +1161,34 @@
     return { start: isoDate(d), end: null };
   }
 
-  // ---------- dashboard language (EN/TH) ----------
-  // Only the Dashboard's own labels are translated — item names, salesman
-  // names, and dates are whatever the user typed and stay as-is either way.
-  const DASH_I18N = {
-    en: {
-      tabLabel: "Sales Log · Dashboard",
-      title: "99clothes-shop",
-      intro: "Every sale logged, and what it leaves you after stock and bills.",
-      range: "Range",
-      rangeOptions: { month: "This Month", lastmonth: "Previous Month", "7": "7 days", "30": "30 days", "90": "90 days", all: "All time" },
-      revenue: "Revenue",
-      unitsSold: "Units sold",
-      grossProfit: "Gross profit",
-      entries: "Entries",
-      byItem: "By item",
-      byItemDetail: "By item, in detail",
-      byDow: "By day of week",
-      wages: "Wages",
-      noSales: "No sales in this range yet.",
-      item: "Item",
-      units: "Units",
-      dow: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-      unassigned: "(unassigned)",
-      netLabel: "Net (after expenses, restocking, repairs & wages)",
-      rowRevenue: "revenue",
-      rowRestocking: "restocking",
-      rowRepairs: "repairs & usage",
-      rowExpenses: "expenses",
-      rowWages: "wages",
-    },
-    th: {
-      tabLabel: "บันทึกยอดขาย · แดชบอร์ด",
-      title: "99clothes-shop",
-      intro: "ยอดขายทุกรายการที่บันทึก และเงินที่เหลือหลังหักต้นทุนและค่าใช้จ่าย",
-      range: "ช่วงเวลา",
-      rangeOptions: { month: "เดือนนี้", lastmonth: "เดือนที่แล้ว", "7": "7 วัน", "30": "30 วัน", "90": "90 วัน", all: "ทั้งหมด" },
-      revenue: "ยอดขาย",
-      unitsSold: "จำนวนที่ขาย",
-      grossProfit: "กำไรขั้นต้น",
-      entries: "รายการ",
-      byItem: "แยกตามสินค้า",
-      byItemDetail: "รายละเอียดตามสินค้า",
-      byDow: "แยกตามวันในสัปดาห์",
-      wages: "ค่าแรง",
-      noSales: "ยังไม่มียอดขายในช่วงนี้",
-      item: "สินค้า",
-      units: "จำนวน",
-      dow: ["อา", "จ", "อ", "พ", "พฤ", "ศ", "ส"],
-      unassigned: "(ไม่ระบุ)",
-      netLabel: "ยอดสุทธิ (หลังหักค่าใช้จ่าย การเติมสินค้า ค่าซ่อม และค่าแรง)",
-      rowRevenue: "ยอดขาย",
-      rowRestocking: "เติมสินค้า",
-      rowRepairs: "ซ่อมแซม/ใช้งาน",
-      rowExpenses: "ค่าใช้จ่าย",
-      rowWages: "ค่าแรง",
-    },
+  // ---------- dashboard text ----------
+  const DASH_TEXT = {
+    tabLabel: "Sales Log · Dashboard",
+    title: "99clothes-shop",
+    intro: "Every sale logged, and what it leaves you after stock and bills.",
+    range: "Range",
+    rangeOptions: { month: "This Month", lastmonth: "Previous Month", "7": "7 days", "30": "30 days", "90": "90 days", all: "All time" },
+    revenue: "Revenue",
+    unitsSold: "Units sold",
+    grossProfit: "Gross profit",
+    entries: "Entries",
+    byItem: "By item",
+    byItemDetail: "By item, in detail",
+    byDow: "By day of week",
+    wages: "Wages",
+    noSales: "No sales in this range yet.",
+    item: "Item",
+    units: "Units",
+    dow: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    unassigned: "(unassigned)",
+    netLabel: "Net (after expenses, restocking, repairs & wages)",
+    rowRevenue: "revenue",
+    rowRestocking: "restocking",
+    rowRepairs: "repairs & usage",
+    rowExpenses: "expenses",
+    rowWages: "wages",
   };
-  function t(key) { return (DASH_I18N[store.dashLang] || DASH_I18N.en)[key]; }
+  function t(key) { return DASH_TEXT[key]; }
 
   function renderDashStaticText() {
     document.getElementById("dash-tab-label").textContent = t("tabLabel");
@@ -1244,23 +1200,6 @@
     document.getElementById("dash-section-bydow").textContent = t("byDow");
     document.getElementById("dash-section-wages").textContent = t("wages");
   }
-
-  function renderDashLangToggle() {
-    document.querySelectorAll("#dash-lang-toggle .lang-btn").forEach((btn) => {
-      btn.classList.toggle("on", btn.dataset.lang === (store.dashLang || "en"));
-    });
-  }
-
-  document.querySelectorAll("#dash-lang-toggle .lang-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (store.dashLang === btn.dataset.lang) return;
-      store.dashLang = btn.dataset.lang;
-      saveStore();
-      renderDashLangToggle();
-      renderDashStaticText();
-      renderDashboard();
-    });
-  });
 
   function renderRangeChips() {
     const wrap = document.getElementById("range-chips");
@@ -2326,9 +2265,9 @@ function doGet(e) {
     document.getElementById("tab-costs").classList.toggle("on", which === "costs");
     document.getElementById("tab-sync").classList.toggle("on", which === "sync");
     document.body.classList.toggle("theme-light", which === "entry");
-    document.body.classList.toggle("theme-dashgreen", which === "dashboard");
+    document.body.classList.toggle("theme-dashcream", which === "dashboard");
     document.body.classList.toggle("theme-costs", which === "costs" || which === "sync");
-    if (which === "dashboard") { renderDashStaticText(); renderDashLangToggle(); renderDashboard(); }
+    if (which === "dashboard") { renderDashStaticText(); renderDashboard(); }
     if (which === "costs") renderCostList();
     if (which === "sync") renderSyncTab();
   }
